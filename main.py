@@ -5,18 +5,37 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_MIN = 25
-SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 20
-REPS =
+WORK_MIN = 1 #25
+SHORT_BREAK_MIN = 1 #5
+LONG_BREAK_MIN = 1 #20
+reps = 0
 
 # ---------------------------- TIMER RESET ------------------------------- # 
+
+
+def reset_timer():
+    global reps
+    reps = 0
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 
 
 def start_time():
-    count_down(WORK_MIN * 60)
+    global reps
+    if reps % 2 == 0:
+        title_label.config(text="Work", fg=GREEN)
+        count_down(WORK_MIN * 60)
+        reps += 1
+    elif reps < 6:
+        title_label.config(text="Break", fg=PINK)
+        count_down(SHORT_BREAK_MIN * 60)
+        reps += 1
+    elif reps == 7:
+        title_label.config(text="Break", fg=RED)
+        count_down(LONG_BREAK_MIN * 60)
+        reps += 1
+    else:
+        reps = 0
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 
@@ -48,7 +67,7 @@ canvas.grid(column=1, row=1)
 start_button = Button(text="Start", highlightthickness=0, command=start_time)
 start_button.grid(column=0, row=2)
 
-reset_button = Button(text="Reset", highlightthickness=0)
+reset_button = Button(text="Reset", highlightthickness=0, command=reset_timer)
 reset_button.grid(column=2, row=2)
 
 check_marks = Label(text="✔", fg=GREEN, bg=YELLOW)
