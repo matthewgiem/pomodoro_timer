@@ -1,21 +1,28 @@
 from tkinter import *
+import math
 # ---------------------------- CONSTANTS ------------------------------- #
 PINK = "#e2979c"
 RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_MIN = 1 #25
-SHORT_BREAK_MIN = 1 #5
-LONG_BREAK_MIN = 1 #20
+WORK_MIN = 25
+SHORT_BREAK_MIN = 5
+LONG_BREAK_MIN = 20
 reps = 0
+timer = None
 
 # ---------------------------- TIMER RESET ------------------------------- # 
 
 
 def reset_timer():
+    window.after_cancel(timer)
     global reps
     reps = 0
+    canvas.itemconfig(timer_text, text="00:00")
+    check_marks.config(text="")
+    title_label.config(text="Timer")
+
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 
@@ -35,7 +42,7 @@ def start_time():
         count_down(LONG_BREAK_MIN * 60)
         reps += 1
     else:
-        reps = 0
+        reset_timer()
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 
@@ -45,7 +52,14 @@ def count_down(count):
     time_left_seconds = count % 60
     canvas.itemconfig(timer_text, text=f"{time_left_min:02d}:{time_left_seconds:02d}")
     if count > 0:
-        window.after(1000, count_down, count - 1)
+        global timer
+        timer = window.after(1000, count_down, count - 1)
+    else:
+        if reps % 2 != 0:
+            number_of_checks = math.ceil(reps/2)
+            check_marks.config(text=number_of_checks*"✔")
+        start_time()
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 
@@ -70,7 +84,7 @@ start_button.grid(column=0, row=2)
 reset_button = Button(text="Reset", highlightthickness=0, command=reset_timer)
 reset_button.grid(column=2, row=2)
 
-check_marks = Label(text="✔", fg=GREEN, bg=YELLOW)
+check_marks = Label(fg=GREEN, bg=YELLOW)
 check_marks.grid(column=1, row=3)
 
 window.mainloop()
